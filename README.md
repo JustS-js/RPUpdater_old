@@ -1,8 +1,8 @@
-# Fabric Example Mod
+# RecorcePack Updater Mod (Fabric)
 
-## Setup
+## Why
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
+Want your server to have custom resourcepack? But you don't enjoy downloading it every time you join your world? Setup RPUpdater and forget about it!
 
 ## License
 

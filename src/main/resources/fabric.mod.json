@@ -1,29 +1,28 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "rpupd",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "ResourcePack Updater",
+  "description": "Basic tool for updating resourcepacks from cloud servers",
   "authors": [
-    "Me!"
+    "Just_S"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "https://github.com/JustS-js/RPUpdater"
   },
 
   "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/rpupd/icon.png",
 
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "net.just_s.rpupdater.RPUpdMod"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "rpupd.mixins.json"
   ],
 
   "depends": {
