@@ -4,8 +4,11 @@
   "package": "net.just_s.rpupdater.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "AbsctractPackMixin",
+    "PackScreenMixin"
   ],
   "client": [
+    "ResourcePackEntryRendererMixin",
     "ResourcePackManagerMixin"
   ],
   "injectors": {

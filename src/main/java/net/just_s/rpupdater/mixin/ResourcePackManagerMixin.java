@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,7 +22,7 @@ public class ResourcePackManagerMixin {
 	private static final File rpudpDir = new File(RPUpdMod.MC.getResourcePackDir(), "RPUpdDir");
 	private static final Set<ResourcePackProvider> rpudpProviders = ImmutableSet.copyOf(new ResourcePackProvider[]{
 			RPUpdMod.MC.getResourcePackProvider(),
-			new FileResourcePackProvider(rpudpDir, ResourcePackSource.PACK_SOURCE_NONE)});
+			new FileResourcePackProvider(rpudpDir, RPUpdMod.PACK_SOURCE_RPUPD)});
 	@Final @Shadow
 	private ResourcePackProfile.Factory profileFactory;
 	@Final @Shadow
@@ -39,13 +38,12 @@ public class ResourcePackManagerMixin {
 	@Inject(at = @At("HEAD"), method = "providePackProfiles", cancellable = true)
 	private void injectLoadFromDir(CallbackInfoReturnable<Map<String, ResourcePackProfile>> cir) {
 		Map<String, ResourcePackProfile> map = Maps.newTreeMap();
-
-		for (ResourcePackProvider resourcePackProvider : this.providers) {
+		for (ResourcePackProvider resourcePackProvider : rpudpProviders) {
 			resourcePackProvider.register((profile) -> {
 				map.put(profile.getName(), profile);
 			}, this.profileFactory);
 		}
-		for (ResourcePackProvider resourcePackProvider : rpudpProviders) {
+		for (ResourcePackProvider resourcePackProvider : this.providers) {
 			resourcePackProvider.register((profile) -> {
 				map.put(profile.getName(), profile);
 			}, this.profileFactory);
