@@ -17,7 +17,7 @@
 
   "environment": "client",
   "entrypoints": {
-    "main": [
+    "client": [
       "net.just_s.rpupdater.RPUpdMod"
     ]
   },
