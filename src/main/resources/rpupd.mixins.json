@@ -4,10 +4,13 @@
   "package": "net.just_s.rpupdater.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "AbsctractPackMixin",
-    "PackScreenMixin"
+    "AbstractPackMixin",
+    "InsertingPackMixin"
   ],
   "client": [
+    "IEntryListWidgetInvoker",
+    "IPackListWidgetAccessor",
+    "PackScreenMixin",
     "ResourcePackEntryRendererMixin",
     "ResourcePackManagerMixin"
   ],

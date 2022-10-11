@@ -35,15 +35,17 @@ public class ResourcePackManagerMixin {
 				RPUpdMod.LOGGER.error("Could not create directory for RPUpdater");
 	}
 
+
+
 	@Inject(at = @At("HEAD"), method = "providePackProfiles", cancellable = true)
 	private void injectLoadFromDir(CallbackInfoReturnable<Map<String, ResourcePackProfile>> cir) {
 		Map<String, ResourcePackProfile> map = Maps.newTreeMap();
-		for (ResourcePackProvider resourcePackProvider : rpudpProviders) {
+		for (ResourcePackProvider resourcePackProvider : this.providers) {
 			resourcePackProvider.register((profile) -> {
 				map.put(profile.getName(), profile);
 			}, this.profileFactory);
 		}
-		for (ResourcePackProvider resourcePackProvider : this.providers) {
+		for (ResourcePackProvider resourcePackProvider : rpudpProviders) {
 			resourcePackProvider.register((profile) -> {
 				map.put(profile.getName(), profile);
 			}, this.profileFactory);
