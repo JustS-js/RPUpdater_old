@@ -1,4 +1,4 @@
-package net.just_s.rpupdater.mixin;
+package net.just_s.rpupdater.mixin.client;
 
 import net.minecraft.client.gui.widget.EntryListWidget;
 import org.spongepowered.asm.mixin.Mixin;

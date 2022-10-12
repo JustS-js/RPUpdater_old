@@ -9,16 +9,20 @@
     "Just_S"
   ],
   "contact": {
-    "sources": "https://github.com/JustS-js/RPUpdater"
+    "sources": "https://github.com/JustS-js/RPUpdater",
+    "homepage": "https://github.com/JustS-js/RPUpdater/wiki"
   },
 
   "license": "CC0-1.0",
   "icon": "assets/rpupd/icon.png",
 
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
     "client": [
       "net.just_s.rpupdater.RPUpdMod"
+    ],
+    "server": [
+      "net.just_s.rpupdater.RPUpdServer"
     ]
   },
   "mixins": [

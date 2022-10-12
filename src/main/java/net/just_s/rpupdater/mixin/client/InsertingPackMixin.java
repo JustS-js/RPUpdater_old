@@ -1,4 +1,4 @@
-package net.just_s.rpupdater.mixin;
+package net.just_s.rpupdater.mixin.client;
 
 import net.just_s.rpupdater.RPUpdMod;
 import net.minecraft.resource.ResourcePackProfile;

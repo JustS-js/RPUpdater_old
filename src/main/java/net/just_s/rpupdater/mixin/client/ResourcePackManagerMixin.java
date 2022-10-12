@@ -1,4 +1,4 @@
-package net.just_s.rpupdater.mixin;
+package net.just_s.rpupdater.mixin.client;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;

@@ -1,4 +1,4 @@
-package net.just_s.rpupdater.mixin;
+package net.just_s.rpupdater.mixin.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.just_s.rpupdater.RPUpdMod;

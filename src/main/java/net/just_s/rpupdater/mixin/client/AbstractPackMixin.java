@@ -1,4 +1,4 @@
-package net.just_s.rpupdater.mixin;
+package net.just_s.rpupdater.mixin.client;
 
 import it.unimi.dsi.fastutil.ints.Int2BooleanOpenCustomHashMap;
 import net.just_s.rpupdater.RPUpdMod;
