@@ -23,22 +23,32 @@ public class AbstractPackMixin {
     private void injectMoveUp(CallbackInfoReturnable<Boolean> cir) {
         List<ResourcePackProfile> list = this.getCurrentList();
         int i = list.indexOf(this.profile);
-        cir.setReturnValue(
-                i > 0 && !((ResourcePackProfile)list.get(i - 1)).isPinned() &&
-                        !profile.getSource().equals(RPUpdMod.PACK_SOURCE_RPUPD) &&
-                        !((ResourcePackProfile)list.get(i - 1)).getSource().equals(RPUpdMod.PACK_SOURCE_RPUPD)
-        );
+        if (profile.getSource().equals(RPUpdMod.PACK_SOURCE_RPUPD))
+            cir.setReturnValue(
+                    i > 0 && !((ResourcePackProfile)list.get(i - 1)).isPinned() &&
+                            ((ResourcePackProfile)list.get(i - 1)).getSource().equals(RPUpdMod.PACK_SOURCE_RPUPD)
+            );
+        else
+            cir.setReturnValue(
+                    i > 0 && !((ResourcePackProfile)list.get(i - 1)).isPinned() &&
+                            !((ResourcePackProfile)list.get(i - 1)).getSource().equals(RPUpdMod.PACK_SOURCE_RPUPD)
+            );
     }
 
     @Inject(method = "canMoveTowardEnd", at = @At("HEAD"), cancellable = true)
     private void injectMoveDown(CallbackInfoReturnable<Boolean> cir) {
         List<ResourcePackProfile> list = this.getCurrentList();
         int i = list.indexOf(this.profile);
-        cir.setReturnValue(
-                i >= 0 && i < list.size() - 1 && !((ResourcePackProfile)list.get(i + 1)).isPinned() &&
-                        !profile.getSource().equals(RPUpdMod.PACK_SOURCE_RPUPD) &&
-                        !((ResourcePackProfile)list.get(i + 1)).getSource().equals(RPUpdMod.PACK_SOURCE_RPUPD)
-        );
+        if (profile.getSource().equals(RPUpdMod.PACK_SOURCE_RPUPD))
+            cir.setReturnValue(
+                    i >= 0 && i < list.size() - 1 && !((ResourcePackProfile)list.get(i + 1)).isPinned() &&
+                            ((ResourcePackProfile)list.get(i + 1)).getSource().equals(RPUpdMod.PACK_SOURCE_RPUPD)
+            );
+        else
+            cir.setReturnValue(
+                    i >= 0 && i < list.size() - 1 && !((ResourcePackProfile)list.get(i + 1)).isPinned() &&
+                            !((ResourcePackProfile)list.get(i + 1)).getSource().equals(RPUpdMod.PACK_SOURCE_RPUPD)
+            );
     }
 
     @Shadow
