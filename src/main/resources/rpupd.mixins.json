@@ -10,7 +10,7 @@
     "client.IEntryListWidgetInvoker",
     "client.InsertingPackMixin",
     "client.IPackListWidgetAccessor",
-    "client.KeyboardTestMixin",
+    "client.ClientWorldMixin",
     "client.PackScreenMixin",
     "client.ResourcePackEntryRendererMixin",
     "client.ResourcePackManagerMixin"

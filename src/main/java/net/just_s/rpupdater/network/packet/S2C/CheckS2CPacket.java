@@ -11,5 +11,11 @@ public class CheckS2CPacket {
                                PacketByteBuf buf, PacketSender responseSender) {
         // Client code
         RPUpdServer.LOGGER.info("Processed checkS2Cpacket");
+        byte length = buf.readByte();
+        for (int i = 0; i < length; i++) {
+            String name = buf.readString();
+            long timestamp = buf.readLong();
+            RPUpdServer.LOGGER.info("Got pack: " + name + " with time " + timestamp);
+        }
     }
 }
