@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -23,19 +24,24 @@ public class RPUpdServer implements DedicatedServerModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(RPUpdMod.MODID+"-server");
     public static File RPUPD_DIR;
 
-    private static Set<RPObject> registeredPacks = new HashSet<>();
+    private static final Set<RPObject> registeredPacks = new HashSet<>();
     @Override
     public void onInitializeServer() {
-        RPUPD_DIR = getOrCreateDir();
+        try {
+            RPUPD_DIR = getOrCreateDir();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         registerPacks();
         ModMessages.registerC2SPackets();
     }
 
-    private static File getOrCreateDir() {
+    private static File getOrCreateDir() throws FileNotFoundException {
         File dir = new File(FabricLoader.getInstance().getGameDir().toFile(), "RPUpdDir");
         if (!dir.exists())
-            if (!dir.mkdir())
-                LOGGER.error("Could not create directory for RPUpdater");
+            if (!dir.mkdir()) {
+                throw new FileNotFoundException("Could not create directory for RPUpdater");
+            }
         return dir;
     }
 
@@ -54,11 +60,7 @@ public class RPUpdServer implements DedicatedServerModInitializer {
 
         for (File pack : packs) {
             RPObject rpObject;
-            long time = -1;
-            try {
-                FileTime timestamp = Files.readAttributes(pack.toPath(), BasicFileAttributes.class).lastModifiedTime();
-                time = timestamp.toMillis();
-            } catch (IOException e) {LOGGER.error("IOException while registering packs: " + e.getMessage());}
+            long time = getPackFileTime(pack);
 
             if (pack.isDirectory()) {
                 rpObject = new RPObject(new DirectoryResourcePack(pack), time);
@@ -71,5 +73,17 @@ public class RPUpdServer implements DedicatedServerModInitializer {
 
     public static ImmutableSet<RPObject> getRegisteredPacks() {
         return ImmutableSet.copyOf(registeredPacks);
+    }
+
+    public static void changePackTimeMetadata(File pack, long time) {
+
+    }
+
+    public static long getPackFileTime(File pack) {
+        try {
+            FileTime timestamp = Files.readAttributes(pack.toPath(), BasicFileAttributes.class).lastModifiedTime();
+            return timestamp.toMillis();
+        } catch (IOException e) {LOGGER.error("IOException while counting pack's time: " + e.getMessage());}
+        return -1;
     }
 }

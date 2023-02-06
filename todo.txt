@@ -1,0 +1,10 @@
+SERVERSIDE:
+- changing RP metadata on server (adding timestamps)
+- receive "load this rp" C2S packet
+- send user pack he asked for
+
+CLIENTSIDE:
+- checking metadata of local packs via timestamp from S2C check packet
+- asking user to update/download rp
+- sending "load this rp" packet
+- downloading pack from server to RPDir (including metadata for timestamp)
