@@ -1,20 +1,21 @@
 package net.just_s.rpupdater;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.just_s.rpupdater.network.ModMessages;
+import net.just_s.rpupdater.util.ModCommands;
 import net.just_s.rpupdater.util.RPObject;
 import net.minecraft.resource.DirectoryResourcePack;
 import net.minecraft.resource.ZipResourcePack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
+import java.io.*;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.HashSet;
@@ -34,6 +35,7 @@ public class RPUpdServer implements DedicatedServerModInitializer {
         }
         registerPacks();
         ModMessages.registerC2SPackets();
+        ModCommands.registerCommands();
     }
 
     private static File getOrCreateDir() throws FileNotFoundException {
@@ -43,6 +45,15 @@ public class RPUpdServer implements DedicatedServerModInitializer {
                 throw new FileNotFoundException("Could not create directory for RPUpdater");
             }
         return dir;
+    }
+
+    public static RPObject getPackByName(String name) {
+        for (RPObject rpObject : registeredPacks) {
+            if (rpObject.getName().equals(name)) {
+                return rpObject;
+            }
+        }
+        return null;
     }
 
     private void registerPacks() {
@@ -61,7 +72,7 @@ public class RPUpdServer implements DedicatedServerModInitializer {
         for (File pack : packs) {
             RPObject rpObject;
             long time = getPackFileTime(pack);
-
+            changePackTimeMetadata(pack, time);
             if (pack.isDirectory()) {
                 rpObject = new RPObject(new DirectoryResourcePack(pack), time);
             } else {
@@ -76,7 +87,21 @@ public class RPUpdServer implements DedicatedServerModInitializer {
     }
 
     public static void changePackTimeMetadata(File pack, long time) {
-
+        File metadata;
+        if (pack.isDirectory()) {
+            metadata = pack.getAbsoluteFile();
+        } else {
+            try (FileSystem fs = FileSystems.newFileSystem(pack.toPath())) {
+                Path source = fs.getPath("/pack.mcmeta");
+                Path temp = fs.getPath("/___pack___.mcmeta");
+                if (Files.exists(temp)) {
+                    throw new IOException("temp file exists, generate another name");
+                }
+                Files.move(source, temp);
+                streamCopy(temp, source, time);
+                Files.delete(temp);
+            } catch (Exception e) {LOGGER.warn(e.toString());}
+        }
     }
 
     public static long getPackFileTime(File pack) {
@@ -85,5 +110,27 @@ public class RPUpdServer implements DedicatedServerModInitializer {
             return timestamp.toMillis();
         } catch (IOException e) {LOGGER.error("IOException while counting pack's time: " + e.getMessage());}
         return -1;
+    }
+
+    static void streamCopy(Path src, Path dst, long time) throws IOException {
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(Files.newInputStream(src)));
+             BufferedWriter bw = new BufferedWriter(
+                     new OutputStreamWriter(Files.newOutputStream(dst)))) {
+
+            StringBuilder textBuilder = new StringBuilder();
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                textBuilder.append(line);
+            }
+
+            JsonObject jsonMeta = new JsonParser().parse(textBuilder.toString()).getAsJsonObject();
+
+            jsonMeta.addProperty("metatime", time);
+            String text = jsonMeta.toString();
+            bw.write(text);
+            bw.newLine();
+        }
     }
 }

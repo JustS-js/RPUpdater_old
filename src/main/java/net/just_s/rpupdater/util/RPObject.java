@@ -14,9 +14,9 @@ public class RPObject {
     private long timestamp;
     private ResourcePack file;
 
-    public RPObject(DirectoryResourcePack profile, long timestamp) {
-        this.name = profile.getName();
-        this.file = profile;
+    public RPObject(DirectoryResourcePack file, long timestamp) {
+        this.name = file.getName();
+        this.file = file;
         // Reading timestamp from file
         this.timestamp = timestamp;
     }
@@ -32,4 +32,7 @@ public class RPObject {
         buf.writeString(this.name);
         buf.writeLong(this.timestamp);
     }
+
+    public String getName() {return this.name;}
+    public long getTimestamp() {return this.timestamp;}
 }
