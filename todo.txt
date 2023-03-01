@@ -4,7 +4,6 @@ SERVERSIDE:
 - send user pack he asked for
 
 CLIENTSIDE:
-- hide and disable packs
 - checking metadata of local packs via timestamp from S2C check packet
 - asking user to update/download rp
 - sending "load this rp" packet
