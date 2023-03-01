@@ -1,5 +1,5 @@
 SERVERSIDE:
-- changing RP metadata on server (adding timestamps)
+- update meta while server is running
 - receive "load this rp" C2S packet
 - send user pack he asked for
 

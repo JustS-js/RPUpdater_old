@@ -89,10 +89,25 @@ public class RPUpdServer implements DedicatedServerModInitializer {
     public static void changePackTimeMetadata(File pack, long time) {
         File metadata;
         if (pack.isDirectory()) {
-            metadata = pack.getAbsoluteFile();
+            try {
+                Path source = Path.of(pack.getPath() + "/pack.mcmeta");
+                if (getMeta(source) != -1) {
+                    return;
+                }
+                Path temp = Path.of(pack.getPath() + "/___pack___.mcmeta");
+                if (Files.exists(temp)) {
+                    throw new IOException("temp file exists, generate another name");
+                }
+                Files.move(source, temp);
+                streamCopy(temp, source, time);
+                Files.delete(temp);
+            } catch (Exception e) {LOGGER.warn(e + " " +  pack.toPath());}
         } else {
             try (FileSystem fs = FileSystems.newFileSystem(pack.toPath())) {
                 Path source = fs.getPath("/pack.mcmeta");
+                if (getMeta(source) != -1) {
+                    return;
+                }
                 Path temp = fs.getPath("/___pack___.mcmeta");
                 if (Files.exists(temp)) {
                     throw new IOException("temp file exists, generate another name");
@@ -100,7 +115,7 @@ public class RPUpdServer implements DedicatedServerModInitializer {
                 Files.move(source, temp);
                 streamCopy(temp, source, time);
                 Files.delete(temp);
-            } catch (Exception e) {LOGGER.warn(e.toString());}
+            } catch (Exception e) {LOGGER.warn(e + " " +  pack.toPath());}
         }
     }
 
@@ -110,6 +125,25 @@ public class RPUpdServer implements DedicatedServerModInitializer {
             return timestamp.toMillis();
         } catch (IOException e) {LOGGER.error("IOException while counting pack's time: " + e.getMessage());}
         return -1;
+    }
+
+    static long getMeta(Path src) throws IOException {
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(Files.newInputStream(src)))) {
+
+            StringBuilder textBuilder = new StringBuilder();
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                textBuilder.append(line);
+            }
+
+            JsonObject jsonMeta = new JsonParser().parse(textBuilder.toString()).getAsJsonObject();
+            if (!jsonMeta.has("metatime")) {
+                return -1;
+            }
+            return jsonMeta.getAsJsonPrimitive("metatime").getAsLong();
+        }
     }
 
     static void streamCopy(Path src, Path dst, long time) throws IOException {
