@@ -87,14 +87,13 @@ public class RPUpdServer implements DedicatedServerModInitializer {
     }
 
     public static void changePackTimeMetadata(File pack, long time) {
-        File metadata;
         if (pack.isDirectory()) {
             try {
-                Path source = Path.of(pack.getPath() + "/pack.mcmeta");
+                Path source = Path.of(pack.getPath());
                 if (getMeta(source) != -1) {
                     return;
                 }
-                Path temp = Path.of(pack.getPath() + "/___pack___.mcmeta");
+                Path temp = Path.of(pack.getPath());
                 if (Files.exists(temp)) {
                     throw new IOException("temp file exists, generate another name");
                 }
@@ -121,6 +120,8 @@ public class RPUpdServer implements DedicatedServerModInitializer {
 
     public static long getPackFileTime(File pack) {
         try {
+            long time = getMeta(pack.toPath());
+            if (time != -1) return time;
             FileTime timestamp = Files.readAttributes(pack.toPath(), BasicFileAttributes.class).lastModifiedTime();
             return timestamp.toMillis();
         } catch (IOException e) {LOGGER.error("IOException while counting pack's time: " + e.getMessage());}
@@ -129,7 +130,7 @@ public class RPUpdServer implements DedicatedServerModInitializer {
 
     static long getMeta(Path src) throws IOException {
         try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(Files.newInputStream(src)))) {
+                new InputStreamReader(Files.newInputStream(Path.of(src.toString() + "/pack.mcmeta"))))) {
 
             StringBuilder textBuilder = new StringBuilder();
             String line;

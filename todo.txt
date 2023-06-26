@@ -8,3 +8,5 @@ CLIENTSIDE:
 - asking user to update/download rp
 - sending "load this rp" packet
 - downloading pack from server to RPDir (including metadata for timestamp)
+
+* checking meta in .zip does not work

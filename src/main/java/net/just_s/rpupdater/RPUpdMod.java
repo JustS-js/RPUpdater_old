@@ -1,5 +1,8 @@
 package net.just_s.rpupdater;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.MalformedJsonException;
 import net.fabricmc.api.ClientModInitializer;
 import net.just_s.rpupdater.network.ModMessages;
 import net.just_s.rpupdater.util.Config;
@@ -11,12 +14,9 @@ import net.minecraft.resource.ZipResourcePack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -38,6 +38,25 @@ public class RPUpdMod implements ClientModInitializer {
 		return alpha;
 	}
 
+	static long getMetaTimestamp(String src) throws IOException {
+		try (BufferedReader br = new BufferedReader(
+				new InputStreamReader(Files.newInputStream(Path.of(src + "/pack.mcmeta"))))) {
+
+			StringBuilder textBuilder = new StringBuilder();
+			String line;
+
+			while ((line = br.readLine()) != null) {
+				textBuilder.append(line);
+			}
+			LOGGER.warn(textBuilder.toString());
+			JsonObject jsonMeta = new JsonParser().parse(textBuilder.toString()).getAsJsonObject();
+			if (!jsonMeta.has("metatime")) {
+				return -1;
+			}
+			return jsonMeta.getAsJsonPrimitive("metatime").getAsLong();
+		}
+	}
+
 	public static RPObject getPackByName(String name) {
 		FileFilter POSSIBLE_PACK = (file) -> file.getName().equals(name);
 		File[] packs = (new File(MC.getResourcePackDir().getPath(), "RPUpdDir")).listFiles(POSSIBLE_PACK);
@@ -49,8 +68,7 @@ public class RPUpdMod implements ClientModInitializer {
 		RPObject rpObject;
 		long time = -1;
 		try {
-			FileTime timestamp = Files.readAttributes(pack.toPath(), BasicFileAttributes.class).lastModifiedTime();
-			time = timestamp.toMillis();
+			time = getMetaTimestamp(pack.getPath());
 		} catch (IOException e) {LOGGER.error("IOException while finding pack: " + e.getMessage());}
 
 		if (pack.isDirectory()) {

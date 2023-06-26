@@ -21,7 +21,7 @@ public class CheckS2CPacket {
         for (int i = 0; i < length; i++) {
             String name = buf.readString();
             long timestamp = buf.readLong();
-//            RPUpdMod.LOGGER.info("Got pack: " + name + " with time " + timestamp);
+            RPUpdMod.LOGGER.info("Got pack: " + name + " with time " + timestamp);
             RPObject rpObject = RPUpdMod.getPackByName(name);
 //            if (rpObject != null) {RPUpdMod.LOGGER.info("Found local pack: " + name + " with time " + rpObject.getTimestamp());}
             if (rpObject == null || rpObject.getTimestamp() != timestamp) {
